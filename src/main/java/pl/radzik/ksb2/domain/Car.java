@@ -1,8 +1,17 @@
 package pl.radzik.ksb2.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.Objects;
+
+@Entity
 public class Car {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String mark;
 
@@ -10,18 +19,21 @@ public class Car {
 
     private String color;
 
-    public Car(int id, String mark, String model, String color) {
+    public Car() {
+    }
+
+    public Car(Long id, String mark, String model, String color) {
         this.id = id;
         this.mark = mark;
         this.model = model;
         this.color = color;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,5 +59,28 @@ public class Car {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return Objects.equals(id, car.id) && Objects.equals(mark, car.mark) && Objects.equals(model, car.model) && Objects.equals(color, car.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, mark, model, color);
+    }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id=" + id +
+                ", mark='" + mark + '\'' +
+                ", model='" + model + '\'' +
+                ", color='" + color + '\'' +
+                '}';
     }
 }
