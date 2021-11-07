@@ -114,15 +114,15 @@ public class CarControllerIT {
     }
 
     @Test
-    void shouldRemoveCarWhenRemoveCar() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.delete("/cars/{id}","1"))
+    void shouldRemoveCarWhenRemoveCar() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cars/{id}", "1"))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void shouldModifiedPartialCar() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.patch("/cars/{id}/{attribute}/{value}","1","color","green"))
+    void shouldModifiedPartialCar() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cars/{id}/{attribute}/{value}", "1", "color", "green"))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -132,6 +132,48 @@ public class CarControllerIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.mark", Is.is("Fiat")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.model", Is.is("Seicento")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.color", Is.is("green")))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void shouldReturnStatus404WhenCarToModifyDoesNotExist() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/cars")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\"id\": 8," +
+                        "\"mark\": \"Subaru\"," +
+                        "\"model\": \"Impreza\"," +
+                        "\"color\": \"grey\"" +
+                        "}"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    void shouldReturnStatus404WhenCarToPartialModifyDoesNotExist() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cars/{id}/{attribute}/{value}", "9", "color", "green"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void shouldReturnStatus404WhenCarToRemoveDoesNotExist() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cars/{id}", "9"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void shouldReturnStatus404WhenPathAddCarAndPathIsIncorrect() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/car")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\"mark23\":\"Peugeot\"," +
+                        "\"model23\":\"207\"," +
+                        "\"color23\":\"blue\"" +
+                        "}"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andDo(MockMvcResultHandlers.print());
     }
 }
